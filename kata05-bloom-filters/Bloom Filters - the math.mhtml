@@ -1,0 +1,1479 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html
+Subject: Bloom Filters - the math
+Date: Sun, 6 Jan 2019 00:01:32 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----"
+
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: text/html
+Content-ID: <frame-4C2293FAA4AE8DB722CEBAA4B14D5916@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN"><!--Converted with LaTeX2H=
+TML 97.1 (release) (July 13th, 1997)
+ by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippman, Marek Rouchal, Martin Wilck and others --><html><head><meta=
+ http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dwindows-1252">
+<title>Bloom Filters - the math</title>
+<meta name=3D"description" content=3D"Bloom Filters - the math">
+<meta name=3D"keywords" content=3D"share">
+<meta name=3D"resource-type" content=3D"document">
+<meta name=3D"distribution" content=3D"global">
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso_8859_=
+1">
+<link rel=3D"STYLESHEET" href=3D"http://pages.cs.wisc.edu/~cao/papers/summa=
+ry-cache/share.css">
+<link rel=3D"next" href=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cac=
+he/node9.html">
+<link rel=3D"previous" href=3D"http://pages.cs.wisc.edu/~cao/papers/summary=
+-cache/node7.html">
+<link rel=3D"up" href=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cache=
+/node5.html">
+<link rel=3D"next" href=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cac=
+he/node9.html">
+</head>
+<body>
+<!--Navigation Panel-->
+<a name=3D"tex2html124" href=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/node9.html">
+<img width=3D"37" height=3D"24" align=3D"BOTTOM" border=3D"0" alt=3D"next" =
+src=3D"http://www.cs.wisc.edu/icons/latex2html/next_motif.gif"></a>=20
+<a name=3D"tex2html122" href=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/node5.html">
+<img width=3D"26" height=3D"24" align=3D"BOTTOM" border=3D"0" alt=3D"up" sr=
+c=3D"http://www.cs.wisc.edu/icons/latex2html/up_motif.gif"></a>=20
+<a name=3D"tex2html116" href=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/node7.html">
+<img width=3D"63" height=3D"24" align=3D"BOTTOM" border=3D"0" alt=3D"previo=
+us" src=3D"http://www.cs.wisc.edu/icons/latex2html/previous_motif.gif"></a>=
+  =20
+<br>
+<b> Next:</b> <a name=3D"tex2html125" href=3D"http://pages.cs.wisc.edu/~cao=
+/papers/summary-cache/node9.html">Bloom Filters as Summaries</a>
+<b> Up:</b> <a name=3D"tex2html123" href=3D"http://pages.cs.wisc.edu/~cao/p=
+apers/summary-cache/node5.html">Summary Cache</a>
+<b> Previous:</b> <a name=3D"tex2html117" href=3D"http://pages.cs.wisc.edu/=
+~cao/papers/summary-cache/node7.html">Summary Representations</a>
+<br>
+<br>
+<!--End of Navigation Panel-->
+<h2><a name=3D"SECTION00053000000000000000">
+Bloom Filters - the math</a>
+</h2>
+<a name=3D"bf-math">&nbsp;</a>
+<p>
+A Bloom filter is a method for representing a set <img width=3D"142" height=
+=3D"28" align=3D"MIDDLE" border=3D"0" src=3D"http://pages.cs.wisc.edu/~cao/=
+papers/summary-cache/img4.gif" alt=3D"$A =3D \{a_1, a_2,
+\ldots, a_n\}$"> of <i>n</i> elements (also called keys) to support members=
+hip=20
+queries.  It was
+invented by Burton Bloom in 1970 [<a href=3D"http://pages.cs.wisc.edu/~cao/=
+papers/summary-cache/node18.html#bloom70">6</a>] and was proposed for
+use in the web context by Marais and Bharat [<a href=3D"http://pages.cs.wis=
+c.edu/~cao/papers/summary-cache/node18.html#Marais-Bharat-97">37</a>] as a =
+mechani
+sm for
+identifying which pages have associated comments stored within a <i>
+CommonKnowledge</i> server.
+</p><p>
+</p><div align=3D"CENTER">
+<br>
+<div align=3D"CENTER"><a name=3D"fig:bloomfilter">&nbsp;</a><a name=3D"214"=
+>&nbsp;</a>
+<table>
+<caption><strong>Figure 3:</strong>
+A Bloom Filter with 4 hash functions.</caption>
+<tbody><tr><td><img width=3D"193" height=3D"204" src=3D"http://pages.cs.wis=
+c.edu/~cao/papers/summary-cache/img5.gif" alt=3D"\begin{figure}
+\centerline{
+\psfig {figure=3Dbloomfilter.eps,height=3D1.8in}
+}\end{figure}"></td></tr>
+</tbody></table>
+</div>
+<br></div>
+<p>
+The idea (illustrated in Figure&nbsp;<a href=3D"http://pages.cs.wisc.edu/~c=
+ao/papers/summary-cache/node8.html#fig:bloomfilter">3</a>) is to allocate a=
+=20
+vector <i>v</i> of <i>m</i> bits, initially all set to 0,
+and then choose <i>k</i> independent hash functions, <img width=3D"95" heig=
+ht=3D"26" align=3D"MIDDLE" border=3D"0" src=3D"http://pages.cs.wisc.edu/~ca=
+o/papers/summary-cache/img6.gif" alt=3D"$h_1, h_2, \ldots, h_k$">,each with=
+ range <img width=3D"76" height=3D"28" align=3D"MIDDLE" border=3D"0" src=3D=
+"http://pages.cs.wisc.edu/~cao/papers/summary-cache/img7.gif" alt=3D"$\{1,\=
+ldots,m\}$">. =20
+For each element <img width=3D"42" height=3D"25" align=3D"MIDDLE" border=3D=
+"0" src=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cache/img8.gif" alt=
+=3D"$a \in A$">, the bits at positions
+<i>h<sub>1</sub></i>(<i>a</i>), <i>h<sub>2</sub></i>(<i>a</i>), ..., <i>h</=
+i><sub><i>k</i></sub>(<i>a</i>) in <i>v</i> are set to 1. (A particular
+bit might be set to 1 multiple times.)  Given a query for <i>b</i> we check
+the bits at positions <i>h<sub>1</sub></i>(<i>b</i>), <i>h<sub>2</sub></i>(=
+<i>b</i>), ..., <i>h</i><sub><i>k</i></sub>(<i>b</i>).  If any of them is 0=
+,
+then certainly <i>b</i> is not in the set <i>A</i>.  Otherwise we conjectur=
+e
+that <i>b</i> is in the set although there is a certain probability that we
+are wrong.  This is called a ``false positive.'' or, for historical
+reasons, a ``false drop.''=20
+The parameters <i>k</i> and <i>m</i> should be chosen such that the probabi=
+lity of=20
+a false positive (and hence a false hit) is acceptable.
+</p><p>
+The salient feature of Bloom filters is that there is a clear tradeoff
+between <i>m</i> and the probability of a false positive.
+Observe that after inserting <i>n</i> keys into a table of size <i>m</i>, t=
+he
+probability that a particular bit is still 0 is exactly
+
+</p><p align=3D"CENTER"><img width=3D"88" height=3D"47" src=3D"http://pages=
+.cs.wisc.edu/~cao/papers/summary-cache/img9.gif" alt=3D"\begin{displaymath}
+\left(1 - {1\over m}\right)^{k n}.\end{displaymath}"></p>
+Hence the probability of a false positive in this situation is=20
+
+<p align=3D"CENTER"><img width=3D"265" height=3D"56" src=3D"http://pages.cs=
+.wisc.edu/~cao/papers/summary-cache/img10.gif" alt=3D"\begin{displaymath}
+\left( 1 - \left(1 - {1\over m}\right)^{k n} \right)^k \approx=20
+\left(1 - e ^ { k n /m} \right)^k=20
+.\end{displaymath}"></p>
+The right hand side is minimized for <img width=3D"107" height=3D"28" align=
+=3D"MIDDLE" border=3D"0" src=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/img11.gif" alt=3D"$k =3D \ln 2 \times m / n$">, in which case it
+becomes
+
+<p align=3D"CENTER"><img width=3D"149" height=3D"47" src=3D"http://pages.cs=
+.wisc.edu/~cao/papers/summary-cache/img12.gif" alt=3D"\begin{displaymath}
+\left({1\over2} \right) ^k =3D (0.6185)^{m/n}.\end{displaymath}"></p>
+In fact <i>k</i> must be an integer and in practice we might
+chose a value less than optimal to reduce computational overhead. =20
+Some example values are:
+<p>
+Table&nbsp;<a href=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cache/no=
+de8.html#tab:bf-config-1">3</a> though Table&nbsp;<a href=3D"http://pages.c=
+s.wisc.edu/~cao/papers/summary-cache/node8.html#tab:bf-config-3">5</a> list=
+ the=20
+false positive retios for common combinations of <i>m</i>/<i>n</i> and <i>k=
+</i>.
+</p><p>
+<br>
+</p><div align=3D"CENTER">
+<a name=3D"309">&nbsp;</a>
+<table cellpadding=3D"3" border=3D"1" align=3D"CENTER">
+<caption><strong>Table 3:</strong>
+False positive rate under various <i>m</i>/<i>n</i> and <i>k</i> combinatio=
+ns. </caption>
+<tbody><tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D""><i>m</i>/<i>n</i=
+></td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i></td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D1</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D2</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D3</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D4</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D5</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D6</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D7</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D8</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">2</td>
+<td align=3D"CENTER" nowrap=3D"">1.39</td>
+<td align=3D"CENTER" nowrap=3D"">0.393</td>
+<td align=3D"CENTER" nowrap=3D"">0.400</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">3</td>
+<td align=3D"CENTER" nowrap=3D"">2.08</td>
+<td align=3D"CENTER" nowrap=3D"">0.283</td>
+<td align=3D"CENTER" nowrap=3D"">0.237</td>
+<td align=3D"CENTER" nowrap=3D"">0.253</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">4</td>
+<td align=3D"CENTER" nowrap=3D"">2.77</td>
+<td align=3D"CENTER" nowrap=3D"">0.221</td>
+<td align=3D"CENTER" nowrap=3D"">0.155</td>
+<td align=3D"CENTER" nowrap=3D"">0.147</td>
+<td align=3D"CENTER" nowrap=3D"">0.160</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">5</td>
+<td align=3D"CENTER" nowrap=3D"">3.46</td>
+<td align=3D"CENTER" nowrap=3D"">0.181</td>
+<td align=3D"CENTER" nowrap=3D"">0.109</td>
+<td align=3D"CENTER" nowrap=3D"">0.092</td>
+<td align=3D"CENTER" nowrap=3D"">0.092</td>
+<td align=3D"CENTER" nowrap=3D"">0.101</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">6</td>
+<td align=3D"CENTER" nowrap=3D"">4.16</td>
+<td align=3D"CENTER" nowrap=3D"">0.154</td>
+<td align=3D"CENTER" nowrap=3D"">0.0804</td>
+<td align=3D"CENTER" nowrap=3D"">0.0609</td>
+<td align=3D"CENTER" nowrap=3D"">0.0561</td>
+<td align=3D"CENTER" nowrap=3D"">0.0578</td>
+<td align=3D"CENTER" nowrap=3D"">0.0638</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">7</td>
+<td align=3D"CENTER" nowrap=3D"">4.85</td>
+<td align=3D"CENTER" nowrap=3D"">0.133</td>
+<td align=3D"CENTER" nowrap=3D"">0.0618</td>
+<td align=3D"CENTER" nowrap=3D"">0.0423</td>
+<td align=3D"CENTER" nowrap=3D"">0.0359</td>
+<td align=3D"CENTER" nowrap=3D"">0.0347</td>
+<td align=3D"CENTER" nowrap=3D"">0.0364</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">8</td>
+<td align=3D"CENTER" nowrap=3D"">5.55</td>
+<td align=3D"CENTER" nowrap=3D"">0.118</td>
+<td align=3D"CENTER" nowrap=3D"">0.0489</td>
+<td align=3D"CENTER" nowrap=3D"">0.0306</td>
+<td align=3D"CENTER" nowrap=3D"">0.024</td>
+<td align=3D"CENTER" nowrap=3D"">0.0217</td>
+<td align=3D"CENTER" nowrap=3D"">0.0216</td>
+<td align=3D"CENTER" nowrap=3D"">0.0229</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">9</td>
+<td align=3D"CENTER" nowrap=3D"">6.24</td>
+<td align=3D"CENTER" nowrap=3D"">0.105</td>
+<td align=3D"CENTER" nowrap=3D"">0.0397</td>
+<td align=3D"CENTER" nowrap=3D"">0.0228</td>
+<td align=3D"CENTER" nowrap=3D"">0.0166</td>
+<td align=3D"CENTER" nowrap=3D"">0.0141</td>
+<td align=3D"CENTER" nowrap=3D"">0.0133</td>
+<td align=3D"CENTER" nowrap=3D"">0.0135</td>
+<td align=3D"CENTER" nowrap=3D"">0.0145</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">10</td>
+<td align=3D"CENTER" nowrap=3D"">6.93</td>
+<td align=3D"CENTER" nowrap=3D"">0.0952</td>
+<td align=3D"CENTER" nowrap=3D"">0.0329</td>
+<td align=3D"CENTER" nowrap=3D"">0.0174</td>
+<td align=3D"CENTER" nowrap=3D"">0.0118</td>
+<td align=3D"CENTER" nowrap=3D"">0.00943</td>
+<td align=3D"CENTER" nowrap=3D"">0.00844</td>
+<td align=3D"CENTER" nowrap=3D"">0.00819</td>
+<td align=3D"CENTER" nowrap=3D"">0.00846</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">11</td>
+<td align=3D"CENTER" nowrap=3D"">7.62</td>
+<td align=3D"CENTER" nowrap=3D"">0.0869</td>
+<td align=3D"CENTER" nowrap=3D"">0.0276</td>
+<td align=3D"CENTER" nowrap=3D"">0.0136</td>
+<td align=3D"CENTER" nowrap=3D"">0.00864</td>
+<td align=3D"CENTER" nowrap=3D"">0.0065</td>
+<td align=3D"CENTER" nowrap=3D"">0.00552</td>
+<td align=3D"CENTER" nowrap=3D"">0.00513</td>
+<td align=3D"CENTER" nowrap=3D"">0.00509</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">12</td>
+<td align=3D"CENTER" nowrap=3D"">8.32</td>
+<td align=3D"CENTER" nowrap=3D"">0.08</td>
+<td align=3D"CENTER" nowrap=3D"">0.0236</td>
+<td align=3D"CENTER" nowrap=3D"">0.0108</td>
+<td align=3D"CENTER" nowrap=3D"">0.00646</td>
+<td align=3D"CENTER" nowrap=3D"">0.00459</td>
+<td align=3D"CENTER" nowrap=3D"">0.00371</td>
+<td align=3D"CENTER" nowrap=3D"">0.00329</td>
+<td align=3D"CENTER" nowrap=3D"">0.00314</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">13</td>
+<td align=3D"CENTER" nowrap=3D"">9.01</td>
+<td align=3D"CENTER" nowrap=3D"">0.074</td>
+<td align=3D"CENTER" nowrap=3D"">0.0203</td>
+<td align=3D"CENTER" nowrap=3D"">0.00875</td>
+<td align=3D"CENTER" nowrap=3D"">0.00492</td>
+<td align=3D"CENTER" nowrap=3D"">0.00332</td>
+<td align=3D"CENTER" nowrap=3D"">0.00255</td>
+<td align=3D"CENTER" nowrap=3D"">0.00217</td>
+<td align=3D"CENTER" nowrap=3D"">0.00199</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">14</td>
+<td align=3D"CENTER" nowrap=3D"">9.7</td>
+<td align=3D"CENTER" nowrap=3D"">0.0689</td>
+<td align=3D"CENTER" nowrap=3D"">0.0177</td>
+<td align=3D"CENTER" nowrap=3D"">0.00718</td>
+<td align=3D"CENTER" nowrap=3D"">0.00381</td>
+<td align=3D"CENTER" nowrap=3D"">0.00244</td>
+<td align=3D"CENTER" nowrap=3D"">0.00179</td>
+<td align=3D"CENTER" nowrap=3D"">0.00146</td>
+<td align=3D"CENTER" nowrap=3D"">0.00129</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">15</td>
+<td align=3D"CENTER" nowrap=3D"">10.4</td>
+<td align=3D"CENTER" nowrap=3D"">0.0645</td>
+<td align=3D"CENTER" nowrap=3D"">0.0156</td>
+<td align=3D"CENTER" nowrap=3D"">0.00596</td>
+<td align=3D"CENTER" nowrap=3D"">0.003</td>
+<td align=3D"CENTER" nowrap=3D"">0.00183</td>
+<td align=3D"CENTER" nowrap=3D"">0.00128</td>
+<td align=3D"CENTER" nowrap=3D"">0.001</td>
+<td align=3D"CENTER" nowrap=3D"">0.000852</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">16</td>
+<td align=3D"CENTER" nowrap=3D"">11.1</td>
+<td align=3D"CENTER" nowrap=3D"">0.0606</td>
+<td align=3D"CENTER" nowrap=3D"">0.0138</td>
+<td align=3D"CENTER" nowrap=3D"">0.005</td>
+<td align=3D"CENTER" nowrap=3D"">0.00239</td>
+<td align=3D"CENTER" nowrap=3D"">0.00139</td>
+<td align=3D"CENTER" nowrap=3D"">0.000935</td>
+<td align=3D"CENTER" nowrap=3D"">0.000702</td>
+<td align=3D"CENTER" nowrap=3D"">0.000574</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">17</td>
+<td align=3D"CENTER" nowrap=3D"">11.8</td>
+<td align=3D"CENTER" nowrap=3D"">0.0571</td>
+<td align=3D"CENTER" nowrap=3D"">0.0123</td>
+<td align=3D"CENTER" nowrap=3D"">0.00423</td>
+<td align=3D"CENTER" nowrap=3D"">0.00193</td>
+<td align=3D"CENTER" nowrap=3D"">0.00107</td>
+<td align=3D"CENTER" nowrap=3D"">0.000692</td>
+<td align=3D"CENTER" nowrap=3D"">0.000499</td>
+<td align=3D"CENTER" nowrap=3D"">0.000394</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">18</td>
+<td align=3D"CENTER" nowrap=3D"">12.5</td>
+<td align=3D"CENTER" nowrap=3D"">0.054</td>
+<td align=3D"CENTER" nowrap=3D"">0.0111</td>
+<td align=3D"CENTER" nowrap=3D"">0.00362</td>
+<td align=3D"CENTER" nowrap=3D"">0.00158</td>
+<td align=3D"CENTER" nowrap=3D"">0.000839</td>
+<td align=3D"CENTER" nowrap=3D"">0.000519</td>
+<td align=3D"CENTER" nowrap=3D"">0.00036</td>
+<td align=3D"CENTER" nowrap=3D"">0.000275</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">19</td>
+<td align=3D"CENTER" nowrap=3D"">13.2</td>
+<td align=3D"CENTER" nowrap=3D"">0.0513</td>
+<td align=3D"CENTER" nowrap=3D"">0.00998</td>
+<td align=3D"CENTER" nowrap=3D"">0.00312</td>
+<td align=3D"CENTER" nowrap=3D"">0.0013</td>
+<td align=3D"CENTER" nowrap=3D"">0.000663</td>
+<td align=3D"CENTER" nowrap=3D"">0.000394</td>
+<td align=3D"CENTER" nowrap=3D"">0.000264</td>
+<td align=3D"CENTER" nowrap=3D"">0.000194</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">20</td>
+<td align=3D"CENTER" nowrap=3D"">13.9</td>
+<td align=3D"CENTER" nowrap=3D"">0.0488</td>
+<td align=3D"CENTER" nowrap=3D"">0.00906</td>
+<td align=3D"CENTER" nowrap=3D"">0.0027</td>
+<td align=3D"CENTER" nowrap=3D"">0.00108</td>
+<td align=3D"CENTER" nowrap=3D"">0.00053</td>
+<td align=3D"CENTER" nowrap=3D"">0.000303</td>
+<td align=3D"CENTER" nowrap=3D"">0.000196</td>
+<td align=3D"CENTER" nowrap=3D"">0.00014</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">21</td>
+<td align=3D"CENTER" nowrap=3D"">14.6</td>
+<td align=3D"CENTER" nowrap=3D"">0.0465</td>
+<td align=3D"CENTER" nowrap=3D"">0.00825</td>
+<td align=3D"CENTER" nowrap=3D"">0.00236</td>
+<td align=3D"CENTER" nowrap=3D"">0.000905</td>
+<td align=3D"CENTER" nowrap=3D"">0.000427</td>
+<td align=3D"CENTER" nowrap=3D"">0.000236</td>
+<td align=3D"CENTER" nowrap=3D"">0.000147</td>
+<td align=3D"CENTER" nowrap=3D"">0.000101</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">22</td>
+<td align=3D"CENTER" nowrap=3D"">15.2</td>
+<td align=3D"CENTER" nowrap=3D"">0.0444</td>
+<td align=3D"CENTER" nowrap=3D"">0.00755</td>
+<td align=3D"CENTER" nowrap=3D"">0.00207</td>
+<td align=3D"CENTER" nowrap=3D"">0.000764</td>
+<td align=3D"CENTER" nowrap=3D"">0.000347</td>
+<td align=3D"CENTER" nowrap=3D"">0.000185</td>
+<td align=3D"CENTER" nowrap=3D"">0.000112</td>
+<td align=3D"CENTER" nowrap=3D"">7.46e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">23</td>
+<td align=3D"CENTER" nowrap=3D"">15.9</td>
+<td align=3D"CENTER" nowrap=3D"">0.0425</td>
+<td align=3D"CENTER" nowrap=3D"">0.00694</td>
+<td align=3D"CENTER" nowrap=3D"">0.00183</td>
+<td align=3D"CENTER" nowrap=3D"">0.000649</td>
+<td align=3D"CENTER" nowrap=3D"">0.000285</td>
+<td align=3D"CENTER" nowrap=3D"">0.000147</td>
+<td align=3D"CENTER" nowrap=3D"">8.56e-05</td>
+<td align=3D"CENTER" nowrap=3D"">5.55e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">24</td>
+<td align=3D"CENTER" nowrap=3D"">16.6</td>
+<td align=3D"CENTER" nowrap=3D"">0.0408</td>
+<td align=3D"CENTER" nowrap=3D"">0.00639</td>
+<td align=3D"CENTER" nowrap=3D"">0.00162</td>
+<td align=3D"CENTER" nowrap=3D"">0.000555</td>
+<td align=3D"CENTER" nowrap=3D"">0.000235</td>
+<td align=3D"CENTER" nowrap=3D"">0.000117</td>
+<td align=3D"CENTER" nowrap=3D"">6.63e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.17e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">25</td>
+<td align=3D"CENTER" nowrap=3D"">17.3</td>
+<td align=3D"CENTER" nowrap=3D"">0.0392</td>
+<td align=3D"CENTER" nowrap=3D"">0.00591</td>
+<td align=3D"CENTER" nowrap=3D"">0.00145</td>
+<td align=3D"CENTER" nowrap=3D"">0.000478</td>
+<td align=3D"CENTER" nowrap=3D"">0.000196</td>
+<td align=3D"CENTER" nowrap=3D"">9.44e-05</td>
+<td align=3D"CENTER" nowrap=3D"">5.18e-05</td>
+<td align=3D"CENTER" nowrap=3D"">3.16e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">26</td>
+<td align=3D"CENTER" nowrap=3D"">18</td>
+<td align=3D"CENTER" nowrap=3D"">0.0377</td>
+<td align=3D"CENTER" nowrap=3D"">0.00548</td>
+<td align=3D"CENTER" nowrap=3D"">0.00129</td>
+<td align=3D"CENTER" nowrap=3D"">0.000413</td>
+<td align=3D"CENTER" nowrap=3D"">0.000164</td>
+<td align=3D"CENTER" nowrap=3D"">7.66e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.08e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.42e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">27</td>
+<td align=3D"CENTER" nowrap=3D"">18.7</td>
+<td align=3D"CENTER" nowrap=3D"">0.0364</td>
+<td align=3D"CENTER" nowrap=3D"">0.0051</td>
+<td align=3D"CENTER" nowrap=3D"">0.00116</td>
+<td align=3D"CENTER" nowrap=3D"">0.000359</td>
+<td align=3D"CENTER" nowrap=3D"">0.000138</td>
+<td align=3D"CENTER" nowrap=3D"">6.26e-05</td>
+<td align=3D"CENTER" nowrap=3D"">3.24e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.87e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">28</td>
+<td align=3D"CENTER" nowrap=3D"">19.4</td>
+<td align=3D"CENTER" nowrap=3D"">0.0351</td>
+<td align=3D"CENTER" nowrap=3D"">0.00475</td>
+<td align=3D"CENTER" nowrap=3D"">0.00105</td>
+<td align=3D"CENTER" nowrap=3D"">0.000314</td>
+<td align=3D"CENTER" nowrap=3D"">0.000117</td>
+<td align=3D"CENTER" nowrap=3D"">5.15e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.59e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.46e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">29</td>
+<td align=3D"CENTER" nowrap=3D"">20.1</td>
+<td align=3D"CENTER" nowrap=3D"">0.0339</td>
+<td align=3D"CENTER" nowrap=3D"">0.00444</td>
+<td align=3D"CENTER" nowrap=3D"">0.000949</td>
+<td align=3D"CENTER" nowrap=3D"">0.000276</td>
+<td align=3D"CENTER" nowrap=3D"">9.96e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.26e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.09e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.14e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">30</td>
+<td align=3D"CENTER" nowrap=3D"">20.8</td>
+<td align=3D"CENTER" nowrap=3D"">0.0328</td>
+<td align=3D"CENTER" nowrap=3D"">0.00416</td>
+<td align=3D"CENTER" nowrap=3D"">0.000862</td>
+<td align=3D"CENTER" nowrap=3D"">0.000243</td>
+<td align=3D"CENTER" nowrap=3D"">8.53e-05</td>
+<td align=3D"CENTER" nowrap=3D"">3.55e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.69e-05</td>
+<td align=3D"CENTER" nowrap=3D"">9.01e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">31</td>
+<td align=3D"CENTER" nowrap=3D"">21.5</td>
+<td align=3D"CENTER" nowrap=3D"">0.0317</td>
+<td align=3D"CENTER" nowrap=3D"">0.0039</td>
+<td align=3D"CENTER" nowrap=3D"">0.000785</td>
+<td align=3D"CENTER" nowrap=3D"">0.000215</td>
+<td align=3D"CENTER" nowrap=3D"">7.33e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.97e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.38e-05</td>
+<td align=3D"CENTER" nowrap=3D"">7.16e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">32</td>
+<td align=3D"CENTER" nowrap=3D"">22.2</td>
+<td align=3D"CENTER" nowrap=3D"">0.0308</td>
+<td align=3D"CENTER" nowrap=3D"">0.00367</td>
+<td align=3D"CENTER" nowrap=3D"">0.000717</td>
+<td align=3D"CENTER" nowrap=3D"">0.000191</td>
+<td align=3D"CENTER" nowrap=3D"">6.33e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.5e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.13e-05</td>
+<td align=3D"CENTER" nowrap=3D"">5.73e-06</td>
+</tr>
+</tbody></table></div>
+<br>
+<p>
+<br>
+</p><div align=3D"CENTER">
+<a name=3D"318">&nbsp;</a>
+<table cellpadding=3D"3" border=3D"1" align=3D"CENTER">
+<caption><strong>Table 4:</strong>
+False positive rate under various <i>m</i>/<i>n</i> and <i>k</i> combinatio=
+ns. </caption>
+<tbody><tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D""><i>m</i>/<i>n</i=
+></td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i></td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D9</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D10</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D11</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D12</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D13</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D14</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D15</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D16</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">11</td>
+<td align=3D"CENTER" nowrap=3D"">7.62</td>
+<td align=3D"CENTER" nowrap=3D"">0.00531</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">12</td>
+<td align=3D"CENTER" nowrap=3D"">8.32</td>
+<td align=3D"CENTER" nowrap=3D"">0.00317</td>
+<td align=3D"CENTER" nowrap=3D"">0.00334</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">13</td>
+<td align=3D"CENTER" nowrap=3D"">9.01</td>
+<td align=3D"CENTER" nowrap=3D"">0.00194</td>
+<td align=3D"CENTER" nowrap=3D"">0.00198</td>
+<td align=3D"CENTER" nowrap=3D"">0.0021</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">14</td>
+<td align=3D"CENTER" nowrap=3D"">9.7</td>
+<td align=3D"CENTER" nowrap=3D"">0.00121</td>
+<td align=3D"CENTER" nowrap=3D"">0.0012</td>
+<td align=3D"CENTER" nowrap=3D"">0.00124</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">15</td>
+<td align=3D"CENTER" nowrap=3D"">10.4</td>
+<td align=3D"CENTER" nowrap=3D"">0.000775</td>
+<td align=3D"CENTER" nowrap=3D"">0.000744</td>
+<td align=3D"CENTER" nowrap=3D"">0.000747</td>
+<td align=3D"CENTER" nowrap=3D"">0.000778</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">16</td>
+<td align=3D"CENTER" nowrap=3D"">11.1</td>
+<td align=3D"CENTER" nowrap=3D"">0.000505</td>
+<td align=3D"CENTER" nowrap=3D"">0.00047</td>
+<td align=3D"CENTER" nowrap=3D"">0.000459</td>
+<td align=3D"CENTER" nowrap=3D"">0.000466</td>
+<td align=3D"CENTER" nowrap=3D"">0.000488</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">17</td>
+<td align=3D"CENTER" nowrap=3D"">11.8</td>
+<td align=3D"CENTER" nowrap=3D"">0.000335</td>
+<td align=3D"CENTER" nowrap=3D"">0.000302</td>
+<td align=3D"CENTER" nowrap=3D"">0.000287</td>
+<td align=3D"CENTER" nowrap=3D"">0.000284</td>
+<td align=3D"CENTER" nowrap=3D"">0.000291</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">18</td>
+<td align=3D"CENTER" nowrap=3D"">12.5</td>
+<td align=3D"CENTER" nowrap=3D"">0.000226</td>
+<td align=3D"CENTER" nowrap=3D"">0.000198</td>
+<td align=3D"CENTER" nowrap=3D"">0.000183</td>
+<td align=3D"CENTER" nowrap=3D"">0.000176</td>
+<td align=3D"CENTER" nowrap=3D"">0.000176</td>
+<td align=3D"CENTER" nowrap=3D"">0.000182</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">19</td>
+<td align=3D"CENTER" nowrap=3D"">13.2</td>
+<td align=3D"CENTER" nowrap=3D"">0.000155</td>
+<td align=3D"CENTER" nowrap=3D"">0.000132</td>
+<td align=3D"CENTER" nowrap=3D"">0.000118</td>
+<td align=3D"CENTER" nowrap=3D"">0.000111</td>
+<td align=3D"CENTER" nowrap=3D"">0.000109</td>
+<td align=3D"CENTER" nowrap=3D"">0.00011</td>
+<td align=3D"CENTER" nowrap=3D"">0.000114</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">20</td>
+<td align=3D"CENTER" nowrap=3D"">13.9</td>
+<td align=3D"CENTER" nowrap=3D"">0.000108</td>
+<td align=3D"CENTER" nowrap=3D"">8.89e-05</td>
+<td align=3D"CENTER" nowrap=3D"">7.77e-05</td>
+<td align=3D"CENTER" nowrap=3D"">7.12e-05</td>
+<td align=3D"CENTER" nowrap=3D"">6.79e-05</td>
+<td align=3D"CENTER" nowrap=3D"">6.71e-05</td>
+<td align=3D"CENTER" nowrap=3D"">6.84e-05</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">21</td>
+<td align=3D"CENTER" nowrap=3D"">14.6</td>
+<td align=3D"CENTER" nowrap=3D"">7.59e-05</td>
+<td align=3D"CENTER" nowrap=3D"">6.09e-05</td>
+<td align=3D"CENTER" nowrap=3D"">5.18e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.63e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.31e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.17e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.16e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.27e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">22</td>
+<td align=3D"CENTER" nowrap=3D"">15.2</td>
+<td align=3D"CENTER" nowrap=3D"">5.42e-05</td>
+<td align=3D"CENTER" nowrap=3D"">4.23e-05</td>
+<td align=3D"CENTER" nowrap=3D"">3.5e-05</td>
+<td align=3D"CENTER" nowrap=3D"">3.05e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.78e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.63e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.57e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.59e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">23</td>
+<td align=3D"CENTER" nowrap=3D"">15.9</td>
+<td align=3D"CENTER" nowrap=3D"">3.92e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.97e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.4e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.04e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.81e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.68e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.61e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.59e-05</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">24</td>
+<td align=3D"CENTER" nowrap=3D"">16.6</td>
+<td align=3D"CENTER" nowrap=3D"">2.86e-05</td>
+<td align=3D"CENTER" nowrap=3D"">2.11e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.66e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.38e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.2e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.08e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.02e-05</td>
+<td align=3D"CENTER" nowrap=3D"">9.87e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">25</td>
+<td align=3D"CENTER" nowrap=3D"">17.3</td>
+<td align=3D"CENTER" nowrap=3D"">2.11e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.52e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.16e-05</td>
+<td align=3D"CENTER" nowrap=3D"">9.42e-06</td>
+<td align=3D"CENTER" nowrap=3D"">8.01e-06</td>
+<td align=3D"CENTER" nowrap=3D"">7.1e-06</td>
+<td align=3D"CENTER" nowrap=3D"">6.54e-06</td>
+<td align=3D"CENTER" nowrap=3D"">6.22e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">26</td>
+<td align=3D"CENTER" nowrap=3D"">18</td>
+<td align=3D"CENTER" nowrap=3D"">1.57e-05</td>
+<td align=3D"CENTER" nowrap=3D"">1.1e-05</td>
+<td align=3D"CENTER" nowrap=3D"">8.23e-06</td>
+<td align=3D"CENTER" nowrap=3D"">6.52e-06</td>
+<td align=3D"CENTER" nowrap=3D"">5.42e-06</td>
+<td align=3D"CENTER" nowrap=3D"">4.7e-06</td>
+<td align=3D"CENTER" nowrap=3D"">4.24e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.96e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">27</td>
+<td align=3D"CENTER" nowrap=3D"">18.7</td>
+<td align=3D"CENTER" nowrap=3D"">1.18e-05</td>
+<td align=3D"CENTER" nowrap=3D"">8.07e-06</td>
+<td align=3D"CENTER" nowrap=3D"">5.89e-06</td>
+<td align=3D"CENTER" nowrap=3D"">4.56e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.7e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.15e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.79e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.55e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">28</td>
+<td align=3D"CENTER" nowrap=3D"">19.4</td>
+<td align=3D"CENTER" nowrap=3D"">8.96e-06</td>
+<td align=3D"CENTER" nowrap=3D"">5.97e-06</td>
+<td align=3D"CENTER" nowrap=3D"">4.25e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.22e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.56e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.13e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.85e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.66e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">29</td>
+<td align=3D"CENTER" nowrap=3D"">20.1</td>
+<td align=3D"CENTER" nowrap=3D"">6.85e-06</td>
+<td align=3D"CENTER" nowrap=3D"">4.45e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.1e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.29e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.79e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.46e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.24e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.09e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">30</td>
+<td align=3D"CENTER" nowrap=3D"">20.8</td>
+<td align=3D"CENTER" nowrap=3D"">5.28e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.35e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.28e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.65e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.26e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.01e-06</td>
+<td align=3D"CENTER" nowrap=3D"">8.39e-06</td>
+<td align=3D"CENTER" nowrap=3D"">7.26e-06</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">31</td>
+<td align=3D"CENTER" nowrap=3D"">21.5</td>
+<td align=3D"CENTER" nowrap=3D"">4.1e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.54e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.69e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.2e-06</td>
+<td align=3D"CENTER" nowrap=3D"">8.93e-07</td>
+<td align=3D"CENTER" nowrap=3D"">7e-07</td>
+<td align=3D"CENTER" nowrap=3D"">5.73e-07</td>
+<td align=3D"CENTER" nowrap=3D"">4.87e-07</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">32</td>
+<td align=3D"CENTER" nowrap=3D"">22.2</td>
+<td align=3D"CENTER" nowrap=3D"">3.2e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.94e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.26e-06</td>
+<td align=3D"CENTER" nowrap=3D"">8.74e-07</td>
+<td align=3D"CENTER" nowrap=3D"">6.4e-07</td>
+<td align=3D"CENTER" nowrap=3D"">4.92e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.95e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.3e-07</td>
+</tr>
+</tbody></table></div>
+<br>
+<p>
+<br>
+</p><div align=3D"CENTER">
+<a name=3D"327">&nbsp;</a>
+<table cellpadding=3D"3" border=3D"1" align=3D"CENTER">
+<caption><strong>Table 5:</strong>
+False positive rate under various <i>m</i>/<i>n</i> and <i>k</i> combinatio=
+ns. </caption>
+<tbody><tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D""><i>m</i>/<i>n</i=
+></td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i></td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D17</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D18</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D19</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D20</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D21</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D22</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D23</td>
+<td align=3D"CENTER" nowrap=3D""><i>k</i>=3D24</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">22</td>
+<td align=3D"CENTER" nowrap=3D"">15.2</td>
+<td align=3D"CENTER" nowrap=3D"">2.67e-05</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">23</td>
+<td align=3D"CENTER" nowrap=3D"">15.9</td>
+<td align=3D"CENTER" nowrap=3D"">1.61e-05</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">24</td>
+<td align=3D"CENTER" nowrap=3D"">16.6</td>
+<td align=3D"CENTER" nowrap=3D"">9.84e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1e-05</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">25</td>
+<td align=3D"CENTER" nowrap=3D"">17.3</td>
+<td align=3D"CENTER" nowrap=3D"">6.08e-06</td>
+<td align=3D"CENTER" nowrap=3D"">6.11e-06</td>
+<td align=3D"CENTER" nowrap=3D"">6.27e-06</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">26</td>
+<td align=3D"CENTER" nowrap=3D"">18</td>
+<td align=3D"CENTER" nowrap=3D"">3.81e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.76e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.8e-06</td>
+<td align=3D"CENTER" nowrap=3D"">3.92e-06</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">27</td>
+<td align=3D"CENTER" nowrap=3D"">18.7</td>
+<td align=3D"CENTER" nowrap=3D"">2.41e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.34e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.33e-06</td>
+<td align=3D"CENTER" nowrap=3D"">2.37e-06</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">28</td>
+<td align=3D"CENTER" nowrap=3D"">19.4</td>
+<td align=3D"CENTER" nowrap=3D"">1.54e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.47e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.44e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.44e-06</td>
+<td align=3D"CENTER" nowrap=3D"">1.48e-06</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">29</td>
+<td align=3D"CENTER" nowrap=3D"">20.1</td>
+<td align=3D"CENTER" nowrap=3D"">9.96e-07</td>
+<td align=3D"CENTER" nowrap=3D"">9.35e-07</td>
+<td align=3D"CENTER" nowrap=3D"">9.01e-07</td>
+<td align=3D"CENTER" nowrap=3D"">8.89e-07</td>
+<td align=3D"CENTER" nowrap=3D"">8.96e-07</td>
+<td align=3D"CENTER" nowrap=3D"">9.21e-07</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">30</td>
+<td align=3D"CENTER" nowrap=3D"">20.8</td>
+<td align=3D"CENTER" nowrap=3D"">6.5e-07</td>
+<td align=3D"CENTER" nowrap=3D"">6e-07</td>
+<td align=3D"CENTER" nowrap=3D"">5.69e-07</td>
+<td align=3D"CENTER" nowrap=3D"">5.54e-07</td>
+<td align=3D"CENTER" nowrap=3D"">5.5e-07</td>
+<td align=3D"CENTER" nowrap=3D"">5.58e-07</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">31</td>
+<td align=3D"CENTER" nowrap=3D"">21.5</td>
+<td align=3D"CENTER" nowrap=3D"">4.29e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.89e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.63e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.48e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.41e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.41e-07</td>
+<td align=3D"CENTER" nowrap=3D"">3.48e-07</td>
+<td align=3D"CENTER" nowrap=3D"">&nbsp;</td>
+</tr>
+<tr valign=3D"TOP"><td align=3D"CENTER" nowrap=3D"">32</td>
+<td align=3D"CENTER" nowrap=3D"">22.2</td>
+<td align=3D"CENTER" nowrap=3D"">2.85e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.55e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.34e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.21e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.13e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.1e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.12e-07</td>
+<td align=3D"CENTER" nowrap=3D"">2.17e-07</td>
+</tr>
+</tbody></table></div>
+<br>
+<p>
+</p><p>
+The graph in Figure <a href=3D"http://pages.cs.wisc.edu/~cao/papers/summary=
+-cache/node8.html#fig:azb1">4</a> shows the probability of a false
+positive as a function of the number of bits allocated for each entry,
+that is, the ratio <img width=3D"65" height=3D"28" align=3D"MIDDLE" border=
+=3D"0" src=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cache/img13.gif"=
+ alt=3D"$\alpha =3D n/m$">.  The curve above is for the case of 4 hash
+functions. The curve below is for the optimum number of hash
+functions.  The scale is logarithmic so the straight line observed
+corresponds to an exponential decrease.  It is clear that Bloom
+filters require very little storage per key at the slight risk of some
+false positives. For instance for a bit array 10 times larger than the
+number of entries, the probability of a false positive is 1.2% for 4
+hash functions, and 0.9% for the optimum case of 5 hash
+functions. The probability of false positives can be easily decreased
+by allocating more memory.
+</p><p>
+<br>
+</p><div align=3D"CENTER"><a name=3D"fig:azb1">&nbsp;</a><a name=3D"334">&n=
+bsp;</a>
+<table>
+<caption><strong>Figure 4:</strong>
+Probability of false positives (log scale).  The top curve is for 4
+hash functions. The bottom curve is for the optimum (integral) number
+of hash functions.</caption>
+<tbody><tr><td><img width=3D"313" height=3D"234" src=3D"http://pages.cs.wis=
+c.edu/~cao/papers/summary-cache/img14.gif" alt=3D"\begin{figure}
+\psfig {figure=3Dbloom.ps,angle=3D270,width=3D3in}\end{figure}"></td></tr>
+</tbody></table>
+</div>
+<br>
+<p>
+Since in our context each proxy maintains a local Bloom filter to represent=
+ its
+own cached documents, changes of set <i>A</i> must be supported.
+This is done by maintaining for each location <img width=3D"9" height=3D"14=
+" align=3D"BOTTOM" border=3D"0" src=3D"http://pages.cs.wisc.edu/~cao/papers=
+/summary-cache/img15.gif" alt=3D"$\ell$"> in the bit array a
+count <img width=3D"28" height=3D"28" align=3D"MIDDLE" border=3D"0" src=3D"=
+http://pages.cs.wisc.edu/~cao/papers/summary-cache/img16.gif" alt=3D"$c(\el=
+l)$"> of the number of times that the bit is set to 1 (that is,
+the number of elements that hashed to <img width=3D"9" height=3D"14" align=
+=3D"BOTTOM" border=3D"0" src=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/img15.gif" alt=3D"$\ell$"> under any of the hash functions).
+All the counts are initially 0. When a key <i>a</i> (in our case, the URL o=
+f a=20
+document) is inserted or deleted, the counts <i>c</i>(<i>h<sub>1</sub></i>(=
+<i>a</i>)), <i>c</i>(<i>h<sub>2</sub></i>(<i>a</i>)), ...,
+<i>c</i>(<i>h</i><sub><i>k</i></sub>(<i>a</i>)) are incremented or decremen=
+ted accordingly.  When a count changes
+from 0 to 1, the corresponding bit is turned on.  When a count
+changes from 1 to 0 the corresponding bit is turned off. =20
+Hence the local Bloom filter always reflects correctly the current director=
+y.
+</p><p>
+Since we also need to allocate memory for the counts, it is important to=20
+know how large they can become.=20
+The asymptotic expected maximum count after inserting <i>n</i> keys with
+<i>k</i> hash functions into a bit array of size <i>m</i> is (see [<a href=
+=3D"http://pages.cs.wisc.edu/~cao/papers/summary-cache/node18.html#GB91">22=
+</a>, p.&nbsp;72])
+
+</p><p align=3D"CENTER"><img width=3D"325" height=3D"44" src=3D"http://page=
+s.cs.wisc.edu/~cao/papers/summary-cache/img17.gif" alt=3D"\begin{displaymat=
+h}
+\Gamma^{-1}(m) \left(1 + {\ln (k n/m) \over \ln \Gamma^{-1}(m)} +=20
+O \left({1 \over \ln^2 \Gamma^{-1}(m)} \right)=20
+ \right), \end{displaymath}"></p>
+and the probability that any count is greater or equal <i>i</i> is=20
+
+<p align=3D"CENTER"><img width=3D"308" height=3D"46" src=3D"http://pages.cs=
+.wisc.edu/~cao/papers/summary-cache/img18.gif" alt=3D"\begin{displaymath}
+\Pr(\max(c) \geq i) \leq m {n k \choose i} {1\over m^i} \leq m
+\left( e n k \over i m \right)^i.\end{displaymath}"></p>
+As already mentioned the optimum value for k (over reals) is <img width=3D"=
+58" height=3D"28" align=3D"MIDDLE" border=3D"0" src=3D"http://pages.cs.wisc=
+.edu/~cao/papers/summary-cache/img19.gif" alt=3D"$\ln 2
+m/n$"> so assuming that the number of hash functions is less than <img widt=
+h=3D"58" height=3D"28" align=3D"MIDDLE" border=3D"0" src=3D"http://pages.cs=
+.wisc.edu/~cao/papers/summary-cache/img19.gif" alt=3D"$\ln 2
+m/n$"> we can further bound
+
+<p align=3D"CENTER"><img width=3D"216" height=3D"46" src=3D"http://pages.cs=
+.wisc.edu/~cao/papers/summary-cache/img20.gif" alt=3D"\begin{displaymath}
+\Pr(\max(c) \geq i) \leq m \left( e \ln 2 \over i\right)^i.\end{displaymath=
+}"></p>
+Hence taking <i>i</i>=3D16 we obtain that
+
+<p align=3D"CENTER"><img width=3D"261" height=3D"26" src=3D"http://pages.cs=
+.wisc.edu/~cao/papers/summary-cache/img21.gif" alt=3D"\begin{displaymath}
+\Pr(\max(c) \geq 16) \leq { 1.37\times 10^{-15}} \times m.\end{displaymath}=
+"></p>
+In other words if we allow 4 bits per count, the probability of
+overflow for practical values of <i>m</i> during the initial insertion in
+the table is minuscule.
+<p>
+In practice we must take into account that the hash functions are not
+truly random, and that we keep doing insertions and
+deletions. Nevertheless, it seems that 4 bits per count would be amply
+sufficient.  Furthermore if the count ever exceeds 15, we can simply
+let it stay at 15;  after many deletions this might lead to a
+situation where the Bloom filter allows a false negative (the count
+becomes 0 when it shouldn't be), but the probability of such a chain
+of events is so low that it is much more likely that the proxy server
+would be rebooted in the meantime and the entire structure reconstructed.
+</p><p></p><hr>
+<!--Navigation Panel-->
+<a name=3D"tex2html124" href=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/node9.html">
+<img width=3D"37" height=3D"24" align=3D"BOTTOM" border=3D"0" alt=3D"next" =
+src=3D"http://www.cs.wisc.edu/icons/latex2html/next_motif.gif"></a>=20
+<a name=3D"tex2html122" href=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/node5.html">
+<img width=3D"26" height=3D"24" align=3D"BOTTOM" border=3D"0" alt=3D"up" sr=
+c=3D"http://www.cs.wisc.edu/icons/latex2html/up_motif.gif"></a>=20
+<a name=3D"tex2html116" href=3D"http://pages.cs.wisc.edu/~cao/papers/summar=
+y-cache/node7.html">
+<img width=3D"63" height=3D"24" align=3D"BOTTOM" border=3D"0" alt=3D"previo=
+us" src=3D"http://www.cs.wisc.edu/icons/latex2html/previous_motif.gif"></a>=
+  =20
+<br>
+<b> Next:</b> <a name=3D"tex2html125" href=3D"http://pages.cs.wisc.edu/~cao=
+/papers/summary-cache/node9.html">Bloom Filters as Summaries</a>
+<b> Up:</b> <a name=3D"tex2html123" href=3D"http://pages.cs.wisc.edu/~cao/p=
+apers/summary-cache/node5.html">Summary Cache</a>
+<b> Previous:</b> <a name=3D"tex2html117" href=3D"http://pages.cs.wisc.edu/=
+~cao/papers/summary-cache/node7.html">Summary Representations</a>
+<!--End of Navigation Panel-->
+<address>
+<i>Pei Cao</i>
+<br><i>7/5/1998</i>
+</address>
+
+
+</body></html>
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/share.css
+
+@charset "windows-1252";
+
+small.TINY { font-size: xx-small; }
+
+small.SCRIPTSIZE { font-size: xx-small; }
+
+small.FOOTNOTESIZE { font-size: x-small; }
+
+small.SMALL { font-size: small; }
+
+big.LARGE { font-size: large; }
+
+big.XLARGE { font-size: x-large; }
+
+big.XXLARGE { font-size: xx-large; }
+
+big.HUGE { font-size: xx-large; }
+
+big.XHUGE { font-size: xx-large; }
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img4.gif
+
+R0lGODlhjgAcAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAACOABwAQAT+cMlJq7046827/yCXNAsgXE+qrgQmMFXAPMpAfjJth7yW
+1zfNq0ecDDcvxskYzDwAUEBQ0CwuqB1GYvFwLCVHq3hMLpstBoA5UWid33ALwYshfK8wC2PP7yMw
+AwNGDhIEAAEPYHcWAoQLhoiPBhIOf3EUjYWHiQs1CQIDk0YFl6Wmp6ipqqscCAIAnGNhrLQcsxYK
+KgV5VgYCBaKPJhI1YAWLFYZLxY8CDy9upsrEghwGx00PAwAKEg2/JrFFswcBAgIHAgGKFNvi5efp
+6xII3Tfu7QDBC9v7/fnvzKFTJ6GLhALzwPBaZWdAQg9VQkQsMhEEqAHRamncyLGjx4/YIEOKsVRG
+xkORqV5syaKvzC2Uq17ienJy3MJC4kAQyLlx5weZE75J4Hahj1EGJCsoWJjgQIsAANwQqDih6dOo
+OB9kNGV1AdStF4AucHWu0c0eCfZEgypKiRFkFNhKcHvlwMGVpuQuoLuBwJ6kYPb9QrGiMFiFVUkt
+SBC12jkKCRQEYSOBMYFqYDBHbrIZsmTPnD9XVmxZUAAEh/beEVvqllZJbyukkN2CQLAAWxoknE2G
+94TXtmMbcGAgGOtLg3k8K7K8N9wQDLrBnE69uvXr2LNr3869O4cIADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img5.gif
+
+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
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img6.gif
+
+R0lGODlhXwAaAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAABfABoAQAT+cMlJq7046827fcAjOYkkFMIGigu5EMIjMIRnZ+tYSsN+
+W41fJSjMEIvIpHJpMwCOPyeUmZTaGiGeYkAUpCaDrATLGmyJCMWCGGbxAAZKOC6H191kLXdRKDCm
+VIGCSAwHDISGg0mFhzcKDjEObh6PkZOKHZUPkh1mEgkHBAgmXxmeC6CiBHQOo5gXp6mjIA0Cah4z
+DKULAoAfAMBPE72CxBwHqD2vy8zNzswNdEXRzx7UPwc+QtnVHdw3CAALD74b4ePl3Qvn5DYHAxIK
+pQTpE+/xXwQPDzXq9wvyxnjBEACZBDG8dl0oOCGLAIMFtDVjeJAFAYQVAHzRZeDLwAlRCRRA0SiB
+YykB8D6JpBASSssKL0GubLhRQEdUHA1SkDauX8IK+3ZS4CchQIkGASYEDbRUAk+iCwAg8CLxh4wk
+V5kqVMe1q9evYMOKHUu2bIYIADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img7.gif
+
+R0lGODlhTAAcAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAABMABwAQAT+cMlJq704682lYNbXjRuhFIGADEmLFAQlYvMmNKSN51PN
+/8AgJgGrGATCZMmBxAwGIZCSlHBICICHhGnYLQSFqXhMLps9Uln6nPRNjgVDlH0JYBGSk6QBkL8L
+Nxc+D2AHAgESA1kUin6JfYyQE4paEwBNCmkACE1oGQQCA4gZXlOlOaEDMXSsra6vsGcBDKOxQB8J
+Gj5gDmu2HG5qc7ENO117lcIYmcOvNwwOMQEAo4s9vhIJDAyryrAPkge5CwkHFQTbeM3XFAkKpe7w
+7+3zE/EUgBLTq1kC3cHsODxIpmQgBUcEvBBw5IlGmA2ExkQMwkDBr4sYM2rcyLEjrAgAOw==
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img8.gif
+
+R0lGODlhKgAZAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAAAqABkAQASncMlJq734EiCkGhajCGSZeU9aMGfrvnAsu8bA3KyLCMBT
+HQHSQRCwPBwJwukxACgkDUGB45tZr1iKAXAJMB6fRqVxUMoSYg5F4JBsAtUJKUboyHPZvH7P7+sR
+fi8MAAYacRYISGYwCg8ARRQJZQsBAIsSczJREk4UlYULDHYUIiUmGTslDngLCQUSCZYgFGRiLwKg
+mK8VD0oEuRU1OKyBxcbHyMnKGREAOw==
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img9.gif
+
+R0lGODlhWAAvAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAABYAC8AQAT+cMlJq7046807FY0njsGjJYxgHEuAAMGSbo4w3pfAdE6C
+ZwIHcPcrXgKAkHHyMiyfnEEBSiEAENRMwdYCECSAh+BbKSiy6HSnIeAWGwesGqPbzNQHd8Wgp4oL
+eTEbAD5UdXREcyIPYVkCLIoTIAwOX0iCjRcJXooCU5EiCAdkoKWmp6gXViZPCgOofBkGAE4XV22F
+bQsGDga1GKupC4caDK9pCkLCw4kaSEpQz4jLF8mOzRXEFQht3d2FaIysT48Xf4HUFJukPwO0CzWn
+DUoGSg3jGDBpW6aMtQeFEkCyQOCAoDQEChyc84sANAK/KDhYGCkBtHQBIqbbyLGjx4/WFAaAA1mK
+EZszC1wlEDBAowaRHhPKuVCgAANoD5Qp7BBglClPDrBVSKDMAosEMGX4yNknh1BQ2swduOioKKqo
+R3yGy5QK64UBT40wCAuVbBWuT2bNlFQg6McCx6AIADDk49xrdT2KM0TW6wJu3r7ZAkC4sOHCGPbK
+7WsWleIiCRSwoUuSDmUoDa5UpomSylhTBBQoFIBAZIIECAqwo5AZX1q0cwJYkSNaQmaXEgbEzUJ0
+tRqiEoLBU0F1Qe85nkoB4KIg0S0LonxneVF8Y/KfnTfywg0lAgA7
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img10.gif
+
+R0lGODlhCQE4AOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAAAJATgAQAT+cMlJq7046827/2AojmRpjopwrmzbCOrWOIZWFEzT7nwv
+EgCED9M4CIcWAWPDiLUKTqR0WnoAXooMY5kxRE2HL8XLewgK4QAHkGhZH1TE9UL2WbESxSAhGNQk
+AnB5e30IAgpqFVsiVmIUSiyQGZJUGW8tAFweDAMwYQSAiRWXF5QjAgCVGE0iqDqVAgdUAg0MDqAB
+AIkAghYJAKAsCqmVA5qqVAEHwSMNusgLZ9AZCMs8DlnT2tvc3d4he9/iyL/MqrTeAb0YCU0GsgFy
+aqyPBeP32wYAjkMO/EimMjhog2kAsjPm8Ek40iGBLAuyEoS70EhDQBICHFg8ti3XqxX+mUAo8Mfg
+gKgEBC3sw3BRBAIGho5EnMigzQN/Cwxkm1BzwYMlBMJ8nLAyRMhKcv4opDDAHouKU4wtfQpAqUhr
+lYAwHAJFQq5gvAQkXFBg5wpX0B4cGDq1g54d9NrKpVBk3dy7ePPq3cu3b947h/wKzkljsBQgdjMo
+MFthZkrDeJNCe1upDp2qGYLAIAiDsAGrC5pCvjtRAwOnWXlBa6nIYAs5iaXMiN23wGMKN3JoGECs
+0khtrCt4bIEK9BBp00ozGashgcYRR1lyJDFc+rffVP+1UDAdUPcVuT/elFAgEYLH4xcwUBO4ghy2
+HKBat2AIhv3N8/NTqH8ffxnVLET+14EoCxDAnR8YkJJEd/z1dxsQKiAwwFYcoDZCXB7IN8oZaZwQ
+S4IcCkDgNOVg8h0GIwbQBHMFFkWBGWiIWMIACpihnQ8ubsBbDYuoghMVDbxiwCsN0EbUiFUAKMVX
+o13QYwgQItPVFFb8cQBBDmEQFJIl5DgFZU0uIAeLHvyYVXlSKEXARwQYt4ADXJIARJxh7lUEnUMk
+AB80Abhpgpl1NmmAA3sGChBjhiaq6KKMNrroCzc6KumkWipJ6T3oXLqDOhu0I8A7mn7TTqgeKJdB
+ALdkVt9tpCLDAKKtWgBYNnrwgeAEzhgZazdTImOqNgQUQGEF4U2QHpp0GbHrFJD+dvBkJcqQSVwB
+Dpy4gHMZOCZBTzeJoeCyPSDGwS9++hCcudb6tNYOAzwEjWWDPTDsBJ6CKlCkxD13ULoLRLvDM1Ky
+KlhdF2gmgMAS/KLrDt/Cwm9oD2/i7hQEwAlNsw3hK0HFCHNwmqsR73DuBOKyAFslgKa2sAQNuPbB
+ltB9d0a1LOgz78whc+XyCRoeZyEg1Ob8Qb3wyKOeE/rG8wwn0UyXkQjOwDrByB6gstE3VrMQNQgE
+eDpUA/MucIDUVGeolMGcqTDoZ+oN1RkQBFTcwIjOdJyglxWUzcG5eiPRcJc5MxCMWp3EwpwVYffN
+kjUEaAyI3Rv0miHejzDYn33+CPNt+eUHFwzA56CHDvrdK3sgIAcE8MaAVQYI/Ld3FzR43225wBB2
+F447mbtPlE8ttH4LfvN6zCC4bAC1ShRwuKWVm2AFrrubgGFzCuhwOkC9yZX1Cj3jGD0IRQLbuwY0
+V+LM7eOU5QbAUii+14cilAQyFQaWJ4CEKCWAgPJEMF+CwvQziaJS5gGjVcZ/PAiAVvLgFGf4aQA7
+O4EDfoYEggVqeiB4FTlSJQVstUgQ/hiSLzi4glwhIyjo2wvHTKCP0kWCgjwoCneIYgj6YIUFTJsG
+AqS2FzOwwCHS4sF7MAXDEmQkiOA6x8RgwUNVrI0HQEziPQLAPymWAFVWxEcPUFyYRQpgsItgDKMY
+KxABADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img11.gif
+
+R0lGODlhawAcAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAABrABwAQAT+cMlJq7046827r8qwCIJDVE+qrmclMCNQCIiiWMY0AO1E
+FA9JA2ghKAoB2iDBRBR6EgZCYkQqE5+sdsu9JLvgsHicZRxgYwEAzSG8luTP49YZ3BSwaYXB7/v1
+FC8SghIAQS4CEgiHFEMIjhgJDlSGEg4CBg2UFZISBgAGgHGjpKWmp6gdn5pkhBsGDoc7rKkTTx4P
+azmtaAIFE5UXDHQXBAxEXgQAekdCoBQJIhIByszSzkG+mGEBBQcC3d8Nagq0DQDo6L8gjAvGFwCJ
+C3jACPILA+0L8RIJNru1AnaZJLCgwYMIEypcSKYBQDEOGWYh6OEAFl4eGOQw8O0gHA+tCAB4gsKF
+UEQDDz3xi6FPgagGbBqxyiRE37RrDWbSonAgyYMBB3Yu8ENUigVCaoIoSzmhQUcLjiAdhWliQQAA
+AQq1+zFBANUTAWJaPTCgANOSvdgEqzDgXrECsTLk2mWx3wF2FOZKqEuBH59xFlYIfkByRFpg+iSR
+cNUUmdQKM6bx0CqgRQ3I8l4YoQCQpkQwAAnQItD5boWHBgp/RohktevXsGPLnk27tm2BEQAAOw==
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img12.gif
+
+R0lGODlhlQAvAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAACVAC8AQAT+cMlJq7046827/2A4CQ0XPFvCCMYhvnAsc46gCYzmJHPv
+/xlER+DwBQClz2PJbBIsj8IIQAGgJkeBVvAc5aaOByP52AopheuCwRMvCAfSwqCgsBePmgUBMGQY
+fi02GANSQBcGX4chBICLFgQAZxUJNVqKaHWPm5ydiw1anqKjGg0HkxU4GCukra4acRllBXEBGQA8
+ogK2EgkCCryQOANqc4MTCQMDucYIZby+FQrLAgMIv8ELAlfTvgN+qZgxD1YgDOfo6ai9xwZIEg19
+FPG85GqqEqETxOSDAvL5mD0S4GKDqWOUAHR5xbChAEMdEBxY2LCixYsYM5KKVEyjRxD+0xAhlOAO
+3AVJWgR+XHmBYwZ8FxgMYElThIIiN8RVOJKkpkcGFDPw7HFTlLUJ5fAUpDDgSzUKMBdMlNBIwoMT
+PSUgmDkhjwQGtn5NQMDM64IC2fLpfGGvkz5tVJAW+5eLzz1MvxIBgDhBwdR8IzPwHbJURgKFneIt
+jGKAsYQB8h4cCBDAwZlZtSRMQ3Atl5YyB0xGegTZjx5EAPwltQAgLSc5FUGRKhCYaW2qk33q7kAA
+rQgHrncLz5AgK4YAJocrX868ufPnMpZBn96BHChN1DFK59B7XYUCBcZkxxjg74gCDtZWyuAimcrx
+raKGwyDZOHyNRHIKNX8/Y9uXa+3+E2B/PkTTwTkbyFeBS6PA1pBsIjTAFQfueCdCARNyksgIgwzg
+WgN6EJQPengNcgceAKRYwEKOSBAAH7bIpA0mOL3Y2hqB/eODjokhhmIVxURyW1QHDPDEA5os0VJc
+gL2hEAEONMCLeE0a4IAByc3ow38epOMlA94ZCBeQUAHAVUheUECAAilyYZUNvSEkwHsYzAmCgkgB
+oOeeTFbA5UDHHEYmMklxCZMb+ZTDQqL33FaBAY7WOSAIf3LQxKUPBIUHX7ktEMAXCShQQizamAfT
+VkwZQICRX2GSxiKhgtKnMDLROYVRqBCQQAKaUrVrrxWAUhwFkKaFKifxWDhHGI9HvXNBAdi5FZwr
+YnKCIAYmQdZrPB0R2JA73VbAQLQVKOOtRpUAq48zFqR7Ln6DLRAPn/FKBOy7DPFh3w3x4ouRWBRe
+6S9GEQAAOw==
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img13.gif
+
+R0lGODlhQQAcAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAABBABwAQAT+cMlJq7046y1fQYIiNdVjnihREUoRCMiQWAwisS4sJwlS
+qJygsPIaGo/IpHJpeYiMAgeF8aMxrlisrZKQLgwAw3ZBAHC95YfEITCQmPC4fE6vS6pGwkEwYQj4
+SwFlWwoDXIYSggCEBSNhFAUCD39dCm9KAIAJCgoGEwNqFJkSCgwTi4B2Ql6qra6vsLGyrayzcDJL
+D55yDW9uFwGIC70Sv8OhFAEHuwcIAWMSWdI1FQINDA4qAaYUBI0S1tjaAAESAMgBj9F+cA/qBzMU
+CsgL7szxCQfJrARsBEATUAh8AHBCJHAMWExA8MQgoHRAzgko2AAZMSa7igE0oK9CRgISlwhktFXB
+BcmTKFOqXMmyZYUIADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img14.gif
+
+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
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img15.gif
+
+R0lGODlhCQAOAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAAAJAA4AQAQ0cMlJ1wNBVMmCCZIgSsm2NA9BMQqhTUOhmvRiFAE4Pcci
+zCfAQ2CgCA6KCsHxqtwQiuIiAgA7
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img16.gif
+
+R0lGODlhHAAcAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAAAcABwAQASqcMlJq73zFZTS0lQDPIJBFQ9GGYy6EIzpzjQmBGsR4IlQ
+CQ5Lb0Jw+CwCT23JbKoGCMrjsBAQJIgBhXA4IkyCo0RwUCDFi4KAdBRdJYaNQvYCMAWNSwPt7Pv/
+gGN5Ew0PBHtMLBUMAQY4CzEYDzJuFAwKBGIEdhQBByYMLUMZAAF8SRMBAHRjaAMFbxRhqUESiCCt
+R0oSKBWFFVBbKRRZSzcqo4HKy8zNgREAOw==
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img17.gif
+
+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
+kiACADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img18.gif
+
+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
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img19.gif
+
+R0lGODlhOgAcAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAAA6ABwAQAT+cMlJq7046yrYEkAhIIpiGdMAEIRSBOOQzEhBVAwitW+c
+bMDgBSYsGo9BkCdI6MiQk4cpuexMAA+LQCBBZBOOHVbiEBga4gpYYgAYdNC4fE4XWoEGR3ahQiNt
+dlUFV3sWDFMBBABwLhINbhQJAxOJixIKk5QFBwIBmwINIAp+C48ApyESAFwLCksLi6x8haqsCSUo
+dUdhur2+v8DBvg25whi8QHdADCgGnHFPVI7NxRNtrCBZDX5njrSUmaXcpBN32QuK1RQNz6AMDjcB
+AAGqtASDEu7wCwGv+VWvxlgYIGvBA0gLDvxYkOBABQW0DuZSyAEgITVltiwRIUHeDVgmDwR8JFGB
+4wcGLX4VI0CKQDFnJygY+Ggsw4uaOHPq3Mmzp08hEQAAOw==
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img20.gif
+
+R0lGODlh2AAuAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAADYAC4AQAT+cMlJq7046827/2AojmRpnmiqhkPSCQDjEQLTTkSBaIiz
+/sCgcPMAPC6wTE2ylBgtAoEEcawMZCKAI6pw7JgOA8KVkE5gRwLAXDAvDoMFwRGQGA6uQUNSpgQO
+BgsMWAsCLh0GDgUWAQ8JhIWHFDB1HAINDA4ECwEAlU9QkEMeRVWjApVDqBl9GAoAsLGwPhutFq+y
+sbQoDQBfox4FCsDExcYnAoskBwLDIwgHm8fT1NXWJwip19vcJk0WCAwIAr+FMjBtCArOFIESAwDS
+Eg8HeyMxE53aFQaiQP0bGLiD4kAShztfBHowMEAZCgO+uk0oECcEPiSQHjg0NwEUAzP+MDbNibKg
+wQACDQ580ZhvVwM3BUxRCKeQA4AEjSbKxPASz4U2EjpJMyJA3hl/20pxSKDAnsSnUBdA3AnChc8S
+AypG3crVQ7NjiQZ2HUu2rNmzaCUK0JO2rbE/Rjd805CoCjynCXZZYKBgn9u/KgToxbFmAYIB5Zok
+60hVAt8LcI9dAjbZwkshl7kNyjBAwQOS+QowCyD6EoymE3rJ2ki48YaLTrAY2FOll7wGgQy4a/Ag
+7oMHYnnGswCcMJEuCOJSICBTDV0GBfxSaGBvtgTeSgBETWIRKcczbr4v8OjmgQMFCIBOULARNCcA
+wZmEv2A+ZoYiYt1XMFmQCHwJVyX+cAAGc3Wj1CiIiWBAFb1pkGBqOx2WAnMzaVXCQCjhEB8T2qFA
+gGfedAjYiENsZoICtozQi2sktnhCXsp9oAADFI4Ao4s4BoEAAE5JxlqOQAYp5JBE2lFOkUgmqeRf
+lW2Amwk5ZdDIASwumaMCFsrl3V65MTMBRBu+Y4iVRaZ0JAXFTYLFk7pZABFIoDg2H5lLqtGYANHI
+EZ5iT6gRZkpz2kAnnVtAtgY5oTBBSJwUDDDnBP0NqmQXGBSR2p5YfMPoAnlFUWBQPIJAGiyDOCCO
+XNKtsAoGKe4XwodHtMpBjyd4mQF2xdyUBSSwWfDgEL9iICEGDOkgwrB0NXRmCZ3+0LoNpd3l40kh
+a8wYB0scprNOAOSEsZ5n6zBxgK7jLoLtBBqNIYl9GzDkhSspssuPsht8GB05LSSQQHoxChZVs9Ei
+oZd+izlRxUcVMKfeAvQoMJB7BNiKwMOPgkNRfFYZpJ8E9lbshxpfsHfdf4likMvJKKecMn2b2uTd
+XClqerAZRVTykT0vFcqHG/4iYVAF6Z2qwYw1RqJBTwnEyCktdkqwhXUVfJpUy/fBwAytpF09sjRZ
+mwZAU39EV9IB6Dn6UQAOOECdA1fbNpEAn7nh3AUTf8AMO3N3QMDPTpgxY0fjIDEgVAkMtwE8Yba7
+ZQoAZUBATT88njgwO06+kEpOJjRkTJNCcH4pZh4bo3MJRZcwraRI4gmlI4svZTjqRS48An6kH5Aq
+7DmCbDpOVWogDO5K5nB7vb1rQAfwVhZ8DDRKI09kAs4KEYDlG0QAADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://pages.cs.wisc.edu/~cao/papers/summary-cache/img21.gif
+
+R0lGODlhBQEaAOMAAAAAAJmZmXd3d1VVVe7u7jMzM8zMzBEREaqqqoiIiGZmZv///0RERN3d3SIi
+Iru7uyH5BAEAAAsALAAAAAAFARoAQAT+cMlJq7046827/2AojmRpnmiqrmzrXkIhTEAdvBvAYIJD
+CbNJjPaQMIISwkM2eRwUBiGScAgiohJgB1EYYGG7LCAhQQCKWeSEoGB6BOGNo0BJDDQERgGdgQsB
+FGcveXsYAQQACBJtEg0AXycCDTgLkhcNapQVmJqdnp+goaKjpKUsOoFxFgOKOKwbCHcYBgMFrRx+
+EwNhArILsRy0thq5FzVGvBS+JMULggtOaUDTN2mNrUehDwIAVZMUAQXejQAEEuHe3AoNAQcFAQ1P
+sXACAQ4ODQ0O3o7mEjLbpgC6cOXDNnH1JDgJYO8Wog8EyFg4WKXagEcSBgh4kCBRk2f+FhTwWZDn
+AsWE0AoYWAJJhUgKJS0ACKIgTqIgF1ua2smzp8+fQIMKHYojXA0GDBwwuMWj2guUFxJkovANhIFM
+BOAMQCM1RFULVzNEZDBA4gKN06COCFtHgAKnG7RkBKLTE6pzAG5wc0s25R8ZCBS8FYDAARbBDwRn
+OTBmAWM6SyosQZDAbKENtBwwtVAswMxp/v6NnCBscx9VGBIcaEn5AoHLDS6D+RNoNGekMwiw6oXh
+NZrYttm8I1y2MpfQqXio6irEJppsD/IasbQAkwMkzCv5gGHWApelHYo5qhadj4DuFjAdSID8duqZ
+YtAYAJneVmzTP+LM/+ao7on796X+th0iaFxnwFdrocaCAQrCxIB/lOQBIVEUVmjhhRhmqOGGHHbo
+4YcghijiiCSKVdUDBBAwYVDUPYVgI1N5wkmJLMhVCYql3LWAZ3BVwCAlP2rwIA8OoNdHAUpRdV0l
+B0wwZAfCwIBkg3MtMJ9EjNVQQ4zhTfkDTj3ygERuDrRnlyp3HQgNOaE1EIUBWDSAYxMPrFhdORN9
+8ZAGiWlmZgXFIBLjnrPoEaZ7GCDQigMKKCSETgow1QCVlcQRXW24BMHbAu9cEClVDeYjgZrV2UbD
+dW5pJoRhrWVXiSCC/hPEAXcQ4EA1Bqx31jeuthMFUkIYOcscp/0hiwLLnMeZdB/tNJNeD1gts4l9
+wxQrBqYhPPAiVdTiJ0lS5vAoAX00UNmMjZUSMZ1CjHKhBiNSTOBZXeiaNIep+U3QERrlxXvJAEWG
+RykFCoBUgLBrIIlvc/oONO7CJrzmwMLRYaHrAqphoCOgqkTG8MPrcmOOrVo0MAAB8bTi8Y7bVYeE
+bBQggJSdH0tQxWKhwYyBeginq+86OzJ70Tf9XgJbtbNNcEA1AQxMAnCNIE2BG575c4YA5iQAtAiv
+WMXvn7pIOhowEVaGHNmebMMeTFymENHaO+lZlYoqqNWC3W1lULCWfLdMgqsE8903jYQXbvjhIUQA
+ADs=
+
+------MultipartBoundary--YTMqItK8njGHAIwfw4J9mhMty4v0JBtVGBnrvqM7yY------
