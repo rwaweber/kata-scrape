@@ -19,15 +19,19 @@ def retrieve_article(link):
     soup = BeautifulSoup(html_doc, 'html.parser')
     return soup.body.find(id="content").article
 
+# if a link matches Kata{0-9}{0-9}
 grammar = re.compile("Kata\d\d")
+
+# root of kata links
 html_doc = request.urlopen("http://codekata.pragprog.com/").read().decode('utf-8')
 soup = BeautifulSoup(html_doc, 'html.parser')
 links = {
     link.get("href")
     for link in soup.find_all('a')
-    if grammar.findall(str(link))    # if a link matches Kata{0-9}{0-9}
+    if grammar.findall(str(link))
 }
 
+# retrieve the text on a kata site and write it as a file
 for link in links:
     uri = link.split("/")[-2]
     pathlib.Path(uri).mkdir(exist_ok=True) 
